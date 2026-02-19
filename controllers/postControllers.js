@@ -4,7 +4,7 @@ const connection = require("./../data/db-blog")
 // index
 function index(req, res) {
     // preparazione della query
-    const sql = "SELECT * FROM db-blog"
+    const sql = "SELECT * FROM posts"
 
     connection.query(sql, (err, results) => {
         if (err) return res.status(500).json({error: "database query failed"})
@@ -100,22 +100,14 @@ function update(req, res) {
 // destroy
 function destroy(req, res) {
     const id = parseInt(req.params.id)
-    const post = postArray.find(post => post.id === id)
 
-    // gli dico cosa deve darmi se nn trova la pagina
-    if (!post) {
-        res.status(404)
+    // preparazione della query
+    const sql = "DELETE FROM posts WHERE id = ?";
 
-        return res.json({
-            error: "Not found",
-            message: "nessun contenuto"
-        })
-    }
-
-    postArray.splice(postArray.indexOf(post), 1)
-    console.log(postArray);
-
-    res.sendStatus(204)
+    connection.query(sql, [id], (err) => {
+        if (err) return res.status(500).json({error: "database query failed"})
+            res.sendStatus(204)
+    });
 }
 
 module.exports = { index, store, show, modify, update, destroy }
