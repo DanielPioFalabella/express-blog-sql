@@ -16,20 +16,15 @@ function index(req, res) {
 function show(req, res) {
     // mi trasformo l'id in numero
     const id = parseInt(req.params.id)
-    // mi trovo l'id che mi interessa nel postArray e faccio in modo che coincida
-    const post = postArray.find(post => post.id === id)
+    
+    // preparazione della query
+    const sql = "SELECT * FROM posts WHERE id = ?";
 
-    // se l'id nn è presente faccio tornare errore in pagina
-    if (!post) {
-        res.status(404)
-
-        return res.json({
-            error: "Not found",
-            message: "pagina non trovata"
-        })
-    }
-
-    res.json(post)
+    connection.query(sql, [id], (err, results) => {
+        if (err) return res.status(500).json({error: "database query failed"})
+        if (results.length === 0) return res.status(404).json({error: "page not found"})
+        res.json(results[0])
+    });
 }
 
 // store
